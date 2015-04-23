@@ -1,3 +1,15 @@
+Composer:
+
+If you're using [Composer](http://getcomposer.org/), you can simply add a dependency `droath/scormcloud-php-library` to your project's composer.json file. Here's a snippet of the composer.json.
+
+    {
+        "require": {
+            "droath/scormcloud-php-library": "dev-master"
+        }
+    }
+
+License:
+
 Software License Agreement (BSD License)
 
 Copyright (c) 2010-2011, Rustici Software, LLC
@@ -43,7 +55,7 @@ Updates:
 v1.3.1
 5.1.2012
 * Added Invitation Service to manage SCORM Cloud invitations through the new Invitation Service in the SCORM Cloud API.
-* Added sample invitation service implementation to the samples folder (demo app). 
+* Added sample invitation service implementation to the samples folder (demo app).
 * Modified the import sample to use a more streamlined process which posts and imports a course package directly into the SCORM Cloud instead of using the 2-part process of uploading and then importing. The ImportFinish.php is no longer used and is deleted.
 
 v1.2.1

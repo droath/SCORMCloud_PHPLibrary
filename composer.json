@@ -1,0 +1,12 @@
+{
+    "name": "droath/scormcloud-php-library",
+    "description": "A PHP library to aid in the integration of the SCORM Cloud web services into PHP applications.",
+    "authors": [
+        {
+            "name": "Rustici Software"
+        }
+    ],
+    "autoload": {
+      "classmap": ["src/"]
+    }
+}

@@ -74,10 +74,7 @@ class ServiceRequest{
 		$postParams = null;
 		if(isset($this->_fileToPost))
 		{
-			//echo '_fileToPost='.$this->_fileToPost;
-			//TODO - check to see if this file exists
-			$fileContents = file_get_contents($this->_fileToPost);
-			$postParams = array('filedata' => "@$this->_fileToPost");
+            $postParams = array('filedata' => new CURLFile($this->_fileToPost, "application/zip", basename($this->_fileToPost)));
 		}
 
         //$responseText = Encoding.GetEncoding("utf-8").GetString(responseBytes);

@@ -386,6 +386,89 @@ class CourseService{
     	
     	return $response;
     }
+
+    /// <summary>
+    /// Import a SCORM .pif (zip file) from the local filesystem using async client.
+    /// </summary>
+    /// <param name="courseId">Unique Identifier for this course.</param>
+    /// <param name="absoluteFilePathToZip">Full path to the .zip file</param>
+    /// <returns>List of Import Results</returns>
+    public function ImportCourseAsync($courseId, $absoluteFilePathToZip)
+    {
+        $uploadService = new UploadService($this->_configuration);
+        $location = $uploadService->UploadFile($absoluteFilePathToZip);
+
+        $importException = null;
+        $response = null;
+        try {
+            $token = $this->ImportCourseAsyncToken($courseId, $location);
+            $done = false;
+            while (!$done){
+                $xmlStatus = $this->getAsyncImportStatus($token);
+                $statusResult = (string) $xmlStatus->status;
+                switch ($statusResult) {
+                    case 'running':
+                        sleep(5);
+                        break;
+                    case 'error':
+                        $done = true;
+                        $response = [];
+                        break;
+                    case 'finished' :
+                        $done = true;
+                        $importResult = new ImportResult(null);
+                        $response = $importResult->ConverToImportResultsFromXML($xmlStatus);
+                        break;
+                    default:
+                        $done = true;
+                        $response = [];
+                        break;
+                }
+            }
+        } catch (Exception $ex) {
+            $importException = $ex;
+        }
+        $uploadService->DeleteFile($location);
+        if($importException != null){
+            throw $importException;
+        }
+        return $response;
+    }
+
+    /// <summary>
+    /// Get import course token
+    /// </summary>
+    /// <param name="courseId">Unique Identifier for the course</param>
+    /// <param name="path">The relative path to the uploaded zip file</param>
+    /// <returns>Token Id</returns>
+    public function ImportCourseAsyncToken($courseId, $path)
+    {
+        $request = new ServiceRequest($this->_configuration);
+        $params = array('courseid'=>$courseId,
+            'path'=>$path);
+        $request->setMethodParams($params);
+        $response = $request->CallService("rustici.course.importCourseAsync");
+        write_log('rustici.course.importCourseAsync : '.$response);
+        $xmlToken = simplexml_load_string($response);
+        $tokenResult = (string) $xmlToken->token->id;
+        return $tokenResult;
+    }
+
+    /// <summary>
+    /// Get import course status and result using async client
+    /// </summary>
+    /// <param name="token">Unique token for the course upload</param>
+    /// <returns>Import Status and Result as SimpleXMLElement</returns>
+    private function getAsyncImportStatus($token)
+    {
+        $request = new ServiceRequest($this->_configuration);
+        $params = array('token'=>$token);
+        $request->setMethodParams($params);
+        $response = $request->CallService("rustici.course.getAsyncImportResult");
+        write_log('rustici.course.getAsyncImportResult : '.$response);
+        $xmlStatus = simplexml_load_string($response);
+        return $xmlStatus;
+    }
  }
 
 ?>

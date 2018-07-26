@@ -484,11 +484,10 @@ class CourseService{
     /// <returns>delay</returns>
     private function fibonacciBackOff(int $attempt)
     {
-        $current = 1;
+        $previous = 2;
+        $current = 3;
         if ($attempt > $current) {
-            $previous = 1;
-            $current = 2;
-            for ($i = 2; $i < $attempt; $i++) {
+            for ($i = 3; $i < $attempt; $i++) {
                 $next = $previous + $current;
                 $previous = $current;
                 $current = $next;

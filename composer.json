@@ -1,5 +1,5 @@
 {
-    "name": "droath/scormcloud-php-library",
+    "name": "grovolearning/scormcloud-php-library",
     "description": "A PHP library to aid in the integration of the SCORM Cloud web services into PHP applications.",
     "authors": [
         {
@@ -8,5 +8,8 @@
     ],
     "autoload": {
       "classmap": ["src/"]
+    },
+    "require": {
+        "php": "^7.1"
     }
 }

@@ -82,6 +82,23 @@ class ImportResult{
     }
 
     /// <summary>
+    /// Helper method that takes the response in SimpleXMLElement format and
+    /// returns a List of one or more ImportResults.
+    /// </summary>
+    /// <param name="xmlResult"></param>
+    /// <returns>List of ImportResults</returns>
+    public static function ConvertToImportResultsFromXML(SimpleXMLElement $xmlResult) : array
+    {
+        $allResults = array();
+        $importResults = $xmlResult->importresult;
+        foreach ($importResults as $result)
+        {
+            $allResults[] = new ImportResult($result);
+        }
+        return $allResults;
+    }
+
+    /// <summary>
     /// The Title of the course that was imported as derived from the manifest
     /// </summary>
     public function getTitle()

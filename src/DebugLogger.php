@@ -39,10 +39,10 @@
 
 
 function write_log($message) {
-	$debug_enabled = false;
+	$debug_enabled = true;
 	
     if ($debug_enabled){
-	$fh = fopen('SCORMCloud_debug.log', 'a');
+	$fh = fopen('php://stdout', 'a');
 	
 	fwrite($fh, '['.date("D dS M,Y h:i a").'] - '.$message."\n");
 	

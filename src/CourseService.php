@@ -407,14 +407,14 @@ class CourseService{
         try {
             $token = $this->ImportCourseAsyncToken($courseId, $location);
             $done = false;
-            $attempt = 0;
+            $attempt = $this->fibonacciBackOff();
             while (!$done){
                 $xmlStatus = $this->getAsyncImportStatus($token);
                 $statusResult = (string) $xmlStatus->status;
                 switch ($statusResult) {
                     case $this::RUNNING:
-                        $attempt++;
-                        $delay = $this->fibonacciBackOff($attempt);
+                        $attempt->next();
+                        $delay = $attempt->current();
                         sleep($delay);
                         break;
                     case $this::ERROR:
@@ -481,19 +481,17 @@ class CourseService{
     /// Get fibonacci back off
     /// </summary>
     /// <param name="attempt">number of attemps</param>
-    /// <returns>delay</returns>
-    private function fibonacciBackOff(int $attempt)
+    /// <returns>Generator</returns>
+    private function fibonacciBackOff() : \Generator
     {
-        $previous = 2;
-        $current = 3;
-        if ($attempt > $current) {
-            for ($i = 3; $i < $attempt; $i++) {
-                $next = $previous + $current;
-                $previous = $current;
-                $current = $next;
-            }
+        $previous = 1;
+        $current = 2;
+        while (true) {
+            yield $current;
+            $next = $previous + $current;
+            $previous = $current;
+            $current = $next;
         }
-        return $current;
     }
  }
 

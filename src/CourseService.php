@@ -407,12 +407,15 @@ class CourseService{
         try {
             $token = $this->ImportCourseAsyncToken($courseId, $location);
             $done = false;
+            $attempt = 0;
             while (!$done){
                 $xmlStatus = $this->getAsyncImportStatus($token);
                 $statusResult = (string) $xmlStatus->status;
                 switch ($statusResult) {
                     case $this::RUNNING:
-                        sleep(5);
+                        $attempt++;
+                        $delay = $this->fibonacciBackOff($attempt);
+                        sleep($delay);
                         break;
                     case $this::ERROR:
                         $done = true;
@@ -472,6 +475,26 @@ class CourseService{
         write_log('rustici.course.getAsyncImportResult : '.$response);
         $xmlStatus = simplexml_load_string($response);
         return $xmlStatus;
+    }
+
+    /// <summary>
+    /// Get fibonacci back off
+    /// </summary>
+    /// <param name="attempt">number of attemps</param>
+    /// <returns>delay</returns>
+    private function fibonacciBackOff(int $attempt)
+    {
+        $current = 1;
+        if ($attempt > $current) {
+            $previous = 1;
+            $current = 2;
+            for ($i = 2; $i < $attempt; $i++) {
+                $next = $previous + $current;
+                $previous = $current;
+                $current = $next;
+            }
+        }
+        return $current;
     }
  }
 
